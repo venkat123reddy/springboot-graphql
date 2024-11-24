@@ -1,8 +1,21 @@
 package com.farmfresh.farmfresh.models;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document
 public class Profile {
       public String name;
       public String id;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String password;
 
     public Profile(String name, String id, String email, String phoneNumber) {
         this.name = name;
@@ -11,6 +24,15 @@ public class Profile {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getCustomerType() {
+        return customerType;
+    }
+
+    public void setCustomerType(String customerType) {
+        this.customerType = customerType;
+    }
+
+    public String customerType;
     public String email;
       public String phoneNumber;
 
