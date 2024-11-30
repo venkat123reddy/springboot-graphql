@@ -31,6 +31,11 @@ public class ProfileController {
         return new Profile("venkata","3","abced","3456");
     }
 
+    @GetMapping("/get/{emailId}")
+    public Profile getProfile(String email) {
+        return profileRepository.findById(email).get();
+    }
+
     @PostMapping("/create")
     public Profile create(@RequestBody Profile profile) {
         System.out.println("create");
@@ -43,9 +48,12 @@ public class ProfileController {
     @PostMapping("/validate")
     public ResponseEntity<UserValidationResponse> userValidation(@RequestBody User user) {
 
-        Optional<User> uservalidation = userRepository.findByUserNameAndPassword(user.userName,user.password);
+        Optional<User> uservalidation = userRepository
+                .findByUserName(user.userName);
 
-        if(uservalidation.isPresent()) {
+        System.out.println("exception......");
+
+        if(uservalidation.isPresent() && uservalidation.get().password.toString().equals(user.password)) {
             return new ResponseEntity<>(new UserValidationResponse(true,"Success"),HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<>(new UserValidationResponse(false,"Invalid Credentials"),HttpStatus.ACCEPTED);

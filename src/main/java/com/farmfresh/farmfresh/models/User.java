@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class User {
     public String userName;
     public String password;
+    public String customerType;
 
     public User(String userName, String password) {
         this.userName = userName;
