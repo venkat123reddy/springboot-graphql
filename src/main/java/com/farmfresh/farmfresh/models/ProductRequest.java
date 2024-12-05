@@ -11,10 +11,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductRequest {
-     private String type;
+    private String type;
     private Integer quantity;
     private String name;
     private int Cost;
     private Date expiryDate;
-    private String userID;
+    private String userId;
 }

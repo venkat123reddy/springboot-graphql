@@ -21,10 +21,13 @@ public class ProductController {
 
         Product product = new Product();
 
+        System.out.println(product1.getUserId());
+
         product.setProductCost(product1.getCost());
         product.setProductName(product1.getName());
         product.setProductExpiryDate(product1.getExpiryDate());
         product.setProductQuantity(product1.getQuantity());
+        product.setUserId(product1.getUserId());
 
         return productRepository.save(product);
     }
@@ -38,5 +41,9 @@ public class ProductController {
     @GetMapping("/get")
     List<Product> getProducts() {
         return productRepository.findAll();
+    }
+    @GetMapping("/get/{userId}")
+    List<Product> getProducts(@PathVariable  String userId) {
+        return productRepository.findByUserId(userId);
     }
 }
