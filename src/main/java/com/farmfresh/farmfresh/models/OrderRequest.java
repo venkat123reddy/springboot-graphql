@@ -12,6 +12,7 @@ public class OrderRequest {
     private List<String> productIds;
     private String deliveryType;
     private Payment paymentRequest;
+    private List<ProductBill> productbiils;
 
 
 }

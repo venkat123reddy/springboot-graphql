@@ -1,10 +1,10 @@
 package com.farmfresh.farmfresh.controller;
 
-import com.farmfresh.farmfresh.models.Profile;
-import com.farmfresh.farmfresh.models.User;
-import com.farmfresh.farmfresh.models.UserValidationResponse;
+import com.farmfresh.farmfresh.models.*;
+import com.farmfresh.farmfresh.repository.CustomerRepository;
 import com.farmfresh.farmfresh.repository.ProfileRepository;
 import com.farmfresh.farmfresh.repository.UserRepository;
+import com.farmfresh.farmfresh.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +24,12 @@ public class ProfileController {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    CustomerRepository customerRepository;
+
+    @Autowired
+    VendorRepository vendorRepository;
+
     @GetMapping("/test")
     public Profile create() {
 
@@ -36,12 +42,43 @@ public class ProfileController {
         return profileRepository.findById(email).get();
     }
 
+    private void createCustomer(Profile profile) {
+        Customer customer = new Customer();
+        customer.setCustomerEmail(profile.getEmail());
+        customer.setCustomerName(profile.getName());
+        customer.setAddress(profile.address);
+        customer.setPhoneNumber(profile.getPhoneNumber());
+        customer.setCustomerId(profile.email);
+        customerRepository.save(customer);
+    }
+
+    private void createVendor(Profile profile) {
+
+        Vendor vendor = new Vendor();
+        vendor.setVendorAddress(profile.address);
+        vendor.setVendorName(profile.getName());
+        vendor.setVendorEmail(profile.getEmail());
+        vendor.setVendorId(profile.email);
+        vendor.setVendorPhoneNumber(profile.phoneNumber);
+        vendorRepository.save(vendor);
+
+    }
     @PostMapping("/create")
     public Profile create(@RequestBody Profile profile) {
-        System.out.println("create");
-        profile.id = profile.email;
-        userRepository.save(new User(profile.getEmail(),profile.getPassword()));
-        return profileRepository.save(profile);
+        if(profile.customerType.equals("customer")) {
+
+            createCustomer(profile);
+
+
+        }
+        else {
+
+            createVendor(profile);
+        }
+       userRepository.save(new User(profile.getEmail(),profile.getPassword(), profile.getCustomerType()));
+//        return profileRepository.save(profile);
+
+        return null;
 
     }
 
@@ -53,7 +90,7 @@ public class ProfileController {
 
         System.out.println("exception......");
 
-        if(uservalidation.isPresent() && uservalidation.get().password.toString().equals(user.password)) {
+        if(uservalidation.isPresent() && uservalidation.get().password.toString().equals(user.password) && uservalidation.get().customerType.equals(user.customerType)) {
             return new ResponseEntity<>(new UserValidationResponse(true,"Success"),HttpStatus.ACCEPTED);
         }
         return new ResponseEntity<>(new UserValidationResponse(false,"Invalid Credentials"),HttpStatus.ACCEPTED);

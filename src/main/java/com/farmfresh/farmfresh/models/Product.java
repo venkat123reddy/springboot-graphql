@@ -1,6 +1,7 @@
 package com.farmfresh.farmfresh.models;
 
 import lombok.Getter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -9,7 +10,15 @@ import java.util.Date;
 @Document
 public class Product {
 
+    @Id
+    private String productId;
     private String userId;
+
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
     private String productName;
     private String productType;
 

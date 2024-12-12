@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Profile {
       public String name;
       public String id;
+      public String phoneNumber;
+      public String address;
+
 
     public String getPassword() {
         return password;
@@ -34,7 +37,7 @@ public class Profile {
 
     public String customerType;
     public String email;
-      public String phoneNumber;
+
 
     public String getId() {
         return id;

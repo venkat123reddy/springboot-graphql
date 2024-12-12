@@ -20,15 +20,12 @@ public class ProductController {
     Product createProduct(@RequestBody ProductRequest product1) {
 
         Product product = new Product();
-
-        System.out.println(product1.getUserId());
-
         product.setProductCost(product1.getCost());
         product.setProductName(product1.getName());
         product.setProductExpiryDate(product1.getExpiryDate());
         product.setProductQuantity(product1.getQuantity());
         product.setUserId(product1.getUserId());
-
+        product.setProductId(product.getProductName()+System.currentTimeMillis());
         return productRepository.save(product);
     }
 

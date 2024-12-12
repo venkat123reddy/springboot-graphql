@@ -15,4 +15,8 @@ public class Order {
     private List<String> productIds;
     private String deliveryType;
     private String userId;
+    private String orderStatus;
+    private String orderCreatedDate;
+    private String orderName;
+    private List<ProductBill> productBillList;
 }
