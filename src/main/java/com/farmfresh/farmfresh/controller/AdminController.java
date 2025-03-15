@@ -35,11 +35,22 @@ public class AdminController {
     }
     @PostMapping("/add")
     public String addRefData(@RequestBody ProdRefData prodRefData) {
-        return refDataRepository.save(prodRefData).getType();
+        ProdRefData prodRefData1 = refDataRepository.findByName(prodRefData.getName());
+        if(prodRefData1==null) {
+            return refDataRepository.save(prodRefData).getType();
+        }
+        return "Duplicate";
     }
 
     @GetMapping("/get")
-    public List<ProdRefData> getRefData() {
+    public List<String> getRefData() {
+        return refDataRepository.findAll()
+                .stream().map(ProdRefData::getName)
+                .toList();
+    }
+
+    @GetMapping("/gets")
+    public List<ProdRefData> getRefDatas() {
         return refDataRepository.findAll();
     }
     @GetMapping("/users")

@@ -52,6 +52,33 @@ public class ProfileController {
         customerRepository.save(customer);
     }
 
+    public static String encrypt(String text, int shift) {
+        StringBuilder encryptedText = new StringBuilder();
+
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+
+            // Encrypt uppercase letters
+            if (Character.isUpperCase(ch)) {
+                ch = (char) (((int) ch + shift - 65) % 26 + 65);
+            }
+            // Encrypt lowercase letters
+            else if (Character.isLowerCase(ch)) {
+                ch = (char) (((int) ch + shift - 97) % 26 + 97);
+            }
+
+            encryptedText.append(ch);
+        }
+
+        return encryptedText.toString();
+    }
+
+    // Decrypts the given string using Caesar cipher
+    public static String decrypt(String text, int shift) {
+        return encrypt(text, 26 - shift);  // Reverse the shift to decrypt
+    }
+
+
     private void createVendor(Profile profile) {
 
         Vendor vendor = new Vendor();
@@ -64,7 +91,12 @@ public class ProfileController {
 
     }
     @PostMapping("/create")
-    public Profile create(@RequestBody Profile profile) {
+    public ProfileResponse create(@RequestBody Profile profile) {
+
+        profile.password = ProfileController.encrypt(profile.password,3);
+        if (userRepository.findByUserName(profile.email).isPresent()) {
+           return new ProfileResponse(300,"Email  already");
+        }
         if(profile.customerType.equals("customer")) {
 
             createCustomer(profile);
@@ -75,10 +107,21 @@ public class ProfileController {
 
             createVendor(profile);
         }
-       userRepository.save(new User(profile.getEmail(),profile.getPassword(), profile.getCustomerType()));
-//        return profileRepository.save(profile);
+        User user = new User();
+        user.setPassword(profile.password);
+        user.setCustomerType(profile.getCustomerType());
+        user.setUserName(profile.getEmail());
+        user.setLoginCount(0);
+       userRepository.save(user);
+        return new ProfileResponse(200,"created");
 
-        return null;
+    }
+    @PostMapping("/password")
+    public String updatePasswROD(@RequestBody User user) {
+        User users = userRepository.findByUserName(user.userName).get();
+        users.setPassword(users.password);
+        userRepository.save(users);
+        return "password updated successfully";
 
     }
 
@@ -88,12 +131,32 @@ public class ProfileController {
         Optional<User> uservalidation = userRepository
                 .findByUserName(user.userName);
 
+     String dec = ProfileController.encrypt(user.password,3);
+
         System.out.println("exception......");
 
-        if(uservalidation.isPresent() && uservalidation.get().password.toString().equals(user.password) && uservalidation.get().customerType.equals(user.customerType)) {
-            return new ResponseEntity<>(new UserValidationResponse(true,"Success"),HttpStatus.ACCEPTED);
+        if(uservalidation.isPresent() && uservalidation.get().password.toString().equals(dec) && uservalidation.get().customerType.equals(user.customerType)) {
+            int count =  uservalidation.get().loginCount;
+            uservalidation.get().setLoginCount(count+1);
+            userRepository.save(uservalidation.get());
+            String address = null;
+            if(user.customerType.equals("customer")) {
+                address = customerRepository.findByCustomerEmail(user.userName).getAddress();
+            }
+
+
+            return new ResponseEntity<>(new UserValidationResponse(true,"Success",count,address),HttpStatus.ACCEPTED);
         }
-        return new ResponseEntity<>(new UserValidationResponse(false,"Invalid Credentials"),HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(new UserValidationResponse(false,"Invalid Credentials",0,""),HttpStatus.ACCEPTED);
+    }
+    @PostMapping("/block/{userName}")
+    public String block(@PathVariable String userName) {
+        Optional<User> uservalidation = userRepository
+                .findByUserName(userName);
+        uservalidation.get().setPassword("awwss");
+        userRepository.save(uservalidation.get());
+        return "block";
+
     }
 
 }

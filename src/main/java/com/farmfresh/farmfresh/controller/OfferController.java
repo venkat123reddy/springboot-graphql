@@ -20,6 +20,13 @@ public class OfferController {
         return offerRepository.findAll();
     }
 
+
+    @GetMapping("/get/{productId}")
+    public Offer offer(@PathVariable String productId) {
+        return offerRepository.findById(productId).get();
+    }
+
+
     @PostMapping("/create")
     public String updateOffers(@RequestBody Offer offer) {
         return offerRepository.save(offer).getProductId();

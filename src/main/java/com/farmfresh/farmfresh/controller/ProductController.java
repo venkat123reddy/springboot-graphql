@@ -6,6 +6,8 @@ import com.farmfresh.farmfresh.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -20,9 +22,12 @@ public class ProductController {
     Product createProduct(@RequestBody ProductRequest product1) {
 
         Product product = new Product();
-        product.setProductCost(product1.getCost());
+        product.setProductCost(((int)(0.1*product1.getCost()))+product1.getCost());
         product.setProductName(product1.getName());
-        product.setProductExpiryDate(product1.getExpiryDate());
+        SimpleDateFormat ft  = new SimpleDateFormat("dd-MM-yyyy");
+
+        String currentDate = ft.format(product1.getExpiryDate());
+        product.setProductExpiryDate(currentDate);
         product.setProductQuantity(product1.getQuantity());
         product.setUserId(product1.getUserId());
         product.setProductId(product.getProductName()+System.currentTimeMillis());
@@ -31,6 +36,12 @@ public class ProductController {
 
     @PutMapping("/update")
     Product updateProduct(@RequestBody Product product)
+    {
+        return productRepository.save(product);
+    }
+
+    @PutMapping("/offer")
+    Product updateOffer(@RequestBody Product product)
     {
         return productRepository.save(product);
     }
